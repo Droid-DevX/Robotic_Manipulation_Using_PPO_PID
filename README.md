@@ -5,7 +5,7 @@
 ### Benchmarking PPO + PID vs. IK + PID for Pick-and-Place
 
 <!-- Upload your demo GIF and replace the path below -->
-<img src="demo.gif" alt="Panda pick-and-place demo" width="720"/>
+<img src="demo1.gif" alt="Panda pick-and-place demo" width="720"/>
 
 <br/>
 

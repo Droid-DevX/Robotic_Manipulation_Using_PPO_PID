@@ -7,3 +7,5 @@ models/
 logs/
 evaluation_results_fair_randomized/
 .envrc
+demo.gif
+demo1.gif
