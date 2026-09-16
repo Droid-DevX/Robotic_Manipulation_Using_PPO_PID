@@ -4,7 +4,7 @@ sys.path.append("src")
 import mujoco
 import numpy as np
 import time
-from pick_place_pid import model, data, run_pick_and_place_pid
+from live_test_pid import model, data, run_pick_and_place_pid
 
 np.random.seed(0)
 

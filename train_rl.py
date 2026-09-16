@@ -12,7 +12,7 @@ from rl_env import PandaPickPlaceEnv
 LOG_DIR = "logs/ppo_panda_pid"
 MODEL_DIR = "models"
 CHECKPOINT_DIR = os.path.join(MODEL_DIR, "checkpoints_pid")
-TOTAL_TIMESTEPS = 7_000_000
+TOTAL_TIMESTEPS = 5_000_000
 N_ENVS = 8
 
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -81,6 +81,9 @@ if __name__ == "__main__":
     print("Starting FRESH PPO + PID pick-and-place training")
     print(f"Environments: {N_ENVS}")
     print(f"Timesteps:    {TOTAL_TIMESTEPS:,}")
+    print("Controller:   PPO -> desired q -> PID -> torque -> MuJoCo")
+    print("Object:       randomized x=[0.35,0.55], y=[-0.15,0.15]")
+    print("Target:       fixed [0.45,-0.30,0.02]")
     
 
     try:

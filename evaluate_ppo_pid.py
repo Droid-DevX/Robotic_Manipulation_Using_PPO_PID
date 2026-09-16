@@ -3,7 +3,7 @@
 Fair randomized comparison: PPO + PID vs IK + PID.
 
 For every episode:
-    1. Sample ONE object position and ONE target position.
+    1. Sample ONE object position; keep the target fixed at the PPO training target.
     2. Run PPO + PID on that exact task.
     3. Run IK + PID on the exact same task.
 
@@ -47,18 +47,15 @@ OUT_DIR = PROJECT_ROOT / "evaluation_results_fair_randomized"
 N_EPISODES = 50
 SEED = 42
 
-# Same randomized task distribution for BOTH controllers.
-#
-# Object positions remain inside the object's training distribution
-# (training was approximately x=[0.35,0.55], y=[-0.15,0.15]).
-#
-# Target positions are deliberately varied around the nominal training target
-# (0.45,-0.30), because the training target itself was fixed.
+# Evaluation distribution matches PPO training:
+# - Object position is randomized.
+# - Target position is FIXED at the training target.
+# This makes the comparison a paired evaluation on the same task distribution
+# the PPO policy was actually trained on.
 OBJECT_X_RANGE = (0.39, 0.51)
 OBJECT_Y_RANGE = (-0.09, 0.09)
 
-TARGET_X_RANGE = (0.39, 0.51)
-TARGET_Y_RANGE = (-0.35, -0.24)
+FIXED_TARGET_XY = np.array([0.45, -0.30], dtype=np.float64)
 
 OBJECT_Z = 0.05
 POSITION_TOLERANCE = 1e-8
@@ -193,13 +190,12 @@ def get_distance_mm(info):
 
 def sample_tasks():
     """
-    Generate the task set ONCE.
+    Generate the object task set ONCE.
 
-    The resulting list is reused by both PPO and IK, guaranteeing paired
-    evaluation.
+    The same randomized object position and the same fixed training target
+    are reused by both PPO and IK, guaranteeing paired evaluation.
     """
     rng = np.random.default_rng(SEED)
-
     tasks = []
 
     for episode in range(1, N_EPISODES + 1):
@@ -208,15 +204,10 @@ def sample_tasks():
             rng.uniform(*OBJECT_Y_RANGE),
         ], dtype=np.float64)
 
-        target_xy = np.array([
-            rng.uniform(*TARGET_X_RANGE),
-            rng.uniform(*TARGET_Y_RANGE),
-        ], dtype=np.float64)
-
         tasks.append({
             "episode": episode,
             "object_xy": object_xy,
-            "target_xy": target_xy,
+            "target_xy": FIXED_TARGET_XY.copy(),
         })
 
     return tasks
@@ -460,7 +451,7 @@ def print_summary(ppo_rows, ik_rows):
     print("PPO + PID vs IK + PID")
     print("=" * 64)
 
-    print("\nSame randomized object + target task for both controllers.")
+    print("\nSame randomized object + fixed training target for both controllers.")
     print(f"Episodes: {N_EPISODES}")
     print(f"Seed: {SEED}")
 
@@ -579,8 +570,8 @@ def main():
     print("\nTask distribution:")
     print(f"  Object X: {OBJECT_X_RANGE}")
     print(f"  Object Y: {OBJECT_Y_RANGE}")
-    print(f"  Target X: {TARGET_X_RANGE}")
-    print(f"  Target Y: {TARGET_Y_RANGE}")
+    print(f"  Target X: fixed at {FIXED_TARGET_XY[0]:.2f}")
+    print(f"  Target Y: fixed at {FIXED_TARGET_XY[1]:.2f}")
 
     # ---------------------------------------------------------------
     # PPO

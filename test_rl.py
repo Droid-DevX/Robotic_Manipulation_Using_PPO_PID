@@ -30,7 +30,7 @@ from rl_env import PandaPickPlaceEnv
 MODEL_PATH = "models/ppo_panda_pid_final.zip"
 VECNORM_PATH = "models/ppo_panda_pid_vecnormalize.pkl"
 
-N_TRIALS = 20
+N_TRIALS = 50
 
 
 # ------------------------------------------------------------
